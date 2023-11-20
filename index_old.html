@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marcar Puntos en Imágenes con Fabric.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+  <style>
+    .divConMargen {
+        border: 1px solid #00f; /* Grosor y color del borde del div */
+    }
+  </style>
+</head>
+<body>
+  <div id="coordenadasInfo">Coordenadas: </div>
+  <canvas id="lienzo2" width="800" height="868" class="divConMargen"></canvas>
+  <canvas id="lienzo3" width="1600" height="1737" class="divConMargen"></canvas>
+  <canvas id="lienzo" width="400" height="434" class="divConMargen"></canvas>
+
+
+  <script>
+    // Crear un objeto canvas con Fabric.js
+    var canvas = new fabric.Canvas('lienzo');
+    var canvas2= new fabric.Canvas('lienzo2');
+    var canvas3= new fabric.Canvas('lienzo3');
+
+    var urlImagen400 = 'images/map400_434.png';
+    var urlImagen800 = 'images/map800_869.png';
+    var urlImagen1600 = 'images/map1600_1737.png';
+
+    var coordenadasInfo = document.getElementById('coordenadasInfo');
+
+
+    // Cargar la imagen y agregarla al canvas
+    fabric.Image.fromURL(urlImagen400, function(imagen) {
+      // Ajustar tamaño si es necesario
+      imagen.scaleToWidth(canvas.width);
+      imagen.scaleToHeight(canvas.height);
+
+      imagen.set({
+        selectable: false,
+        evented: false
+      });
+
+      // Agregar la imagen al canvas
+      canvas.add(imagen);
+    });
+
+    fabric.Image.fromURL(urlImagen800, function(imagen) {
+      // Ajustar tamaño si es necesario
+      imagen.scaleToWidth(canvas2.width);
+      imagen.scaleToHeight(canvas2.height);
+
+      imagen.set({
+        selectable: false,
+        evented: false
+      });
+
+      // Agregar la imagen al canvas
+      canvas2.add(imagen);
+    });
+
+    fabric.Image.fromURL(urlImagen1600, function(imagen) {
+      // Ajustar tamaño si es necesario
+      imagen.scaleToWidth(canvas3.width);
+      imagen.scaleToHeight(canvas3.height);
+
+      imagen.set({
+        selectable: false,
+        evented: false
+      });
+
+      // Agregar la imagen al canvas
+      canvas3.add(imagen);
+    });
+
+    // Función para agregar un punto en coordenadas relativas (entre 0 y 1)
+    function agregarPunto(xRelativo, yRelativo) {
+      // Crear un círculo (punto) en el lienzo
+      var punto = new fabric.Circle({
+        left: xRelativo * canvas.width,
+        top: yRelativo * canvas.height,
+        radius: 5,  // ajusta el tamaño del punto según sea necesario
+        fill: 'red',
+        selectable: true  // para evitar que se pueda seleccionar y mover
+      });
+
+      coordenadasInfo.innerHTML = 'Coordenadas: (' + xRelativo + ', ' + yRelativo + ')';
+
+      // Agregar el punto al lienzo
+      canvas.add(punto);
+    }
+
+    function agregarPunto2(xRelativo, yRelativo) {
+      // Crear un círculo (punto) en el lienzo
+      var punto = new fabric.Circle({
+        left: xRelativo * canvas2.width,
+        top: yRelativo * canvas2.height,
+        radius: 5,  // ajusta el tamaño del punto según sea necesario
+        fill: 'blue',
+        selectable: true  // para evitar que se pueda seleccionar y mover
+      });
+      coordenadasInfo.innerHTML = 'Coordenadas: (' + xRelativo + ', ' + yRelativo + ')';
+
+      // Agregar el punto al lienzo
+      canvas2.add(punto);
+    }
+
+    function agregarPunto3(xRelativo, yRelativo) {
+      // Crear un círculo (punto) en el lienzo
+      var punto = new fabric.Circle({
+        left: xRelativo * canvas3.width,
+        top: yRelativo * canvas3.height,
+        radius: 5,  // ajusta el tamaño del punto según sea necesario
+        fill: 'black',
+        selectable: true  // para evitar que se pueda seleccionar y mover
+      });
+
+      coordenadasInfo.innerHTML = 'Coordenadas: (' + xRelativo + ', ' + yRelativo + ')';
+
+      // Agregar el punto al lienzo
+      canvas3.add(punto);
+    }
+
+    canvas.on('mouse:down', function(event) {
+      // Obtener las coordenadas del clic
+      var x = event.e.clientX - canvas._offset.left;
+      var y = event.e.clientY - canvas._offset.top;
+
+      // Marcar el punto en el canvas
+      agregarPunto(x / canvas.width, y / canvas.height);
+      agregarPunto2(x / canvas.width, y / canvas.height);
+      agregarPunto3(x / canvas.width, y / canvas.height);
+    });
+
+    canvas2.on('mouse:down', function(event) {
+      // Obtener las coordenadas del clic
+      var x = event.e.clientX - canvas2._offset.left;
+      var y = event.e.clientY - canvas2._offset.top;
+
+      // Marcar el punto en el canvas
+      agregarPunto(x / canvas2.width, y / canvas2.height);
+      agregarPunto2(x / canvas2.width, y / canvas2.height);
+      agregarPunto3(x / canvas2.width, y / canvas2.height);
+    });
+    // Ejemplo: Agregar un punto en las coordenadas relativas (0.5, 0.3) al cargar la página
+    window.onload = function() {
+      agregarPunto(0.5, 0.3);
+      agregarPunto(0, 0);
+      agregarPunto(0.99, 0.99);
+
+      agregarPunto2(0.5, 0.3);
+      agregarPunto2(0, 0);
+      agregarPunto2(0.99, 0.99);
+
+      agregarPunto3(0.5, 0.3);
+      agregarPunto3(0, 0);
+      agregarPunto3(0.99, 0.99);
+    };
+  </script>
+</body>
+</html>
+

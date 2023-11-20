@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marcar Puntos en Imágenes con Leftlet</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+      #map {
+        border: 1px solid #00f;
+        width: 600px;
+        height: 600px; /* Grosor y color del borde del div */
+      }
+
+      @media (min-width: 900px) {
+        #map {
+          width: 1000px;
+          height: 1000px;
+        }
+      }
+
+      @media (min-width: 1400px) {
+        #map {
+          width: 100%;
+          height: 1000px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <button id="addMarkerButton">Añadir Punto</button>
+
+    <script>
+      var screenWidth =
+        window.innerWidth ||
+        document.documentElement.clientWidth ||
+        document.body.clientWidth;
+      console.log("screenWidth", screenWidth);
+
+      let zoom;
+
+      if (screenWidth < 900) {
+        zoom = 0;
+      } else if (screenWidth < 1200) {
+        zoom = 3;
+      } else {
+        zoom = 4;
+      }
+
+      var map = L.map("map").setView([-60.930432, -91.054688], zoom);
+      L.tileLayer("images/map/{z}/{x}/{y}.png", {
+        continuousWorld: false,
+        noWrap: true,
+        minZoom: 2,
+        maxZoom: 6,
+        tms: true,
+        tmsOverrides: true,
+      }).addTo(map);
+
+      var legend = L.control({ position: "topright" });
+      legend.onAdd = function (map) {
+        var div = L.DomUtil.create("div", "info legend");
+        div.innerHTML =
+          '<select id="select-location"><option value="-63.706121, -34.621315">Zone 1</option><option value="-48.217427, -145.905631">Zone 2</option><option value="-74.407114, -105.646376">Zone 3</option></select>';
+        div.firstChild.onmousedown = div.firstChild.ondblclick =
+          L.DomEvent.stopPropagation;
+        return div;
+      };
+      legend.addTo(map);
+
+      var selectElement = document.querySelector("select");
+
+      // Añade un evento de cambio al elemento select
+      selectElement.addEventListener("change", function (e) {
+        console.log('evento', e.target.value.split(","))
+        map.flyTo(e.target.value.split(","), 5)
+      });
+
+      var markers = [];
+
+      function addMarker() {
+        let marker = L.marker(map.getCenter(), {
+          draggable: true,
+        }).addTo(map);
+        markers.push(marker);
+
+        // Puedes personalizar el contenido emergente del marcador
+        marker.bindPopup("Nuevo Punto Añadido").openPopup();
+        marker.on("dragend", function (e) {
+          marker
+            .getPopup()
+            .setContent(marker.getLatLng().toString())
+            .openOn(map);
+        });
+      }
+      document
+        .getElementById("addMarkerButton")
+        .addEventListener("click", addMarker);
+
+      function manejarCambioDeTamaño() {
+        // Obtener el tamaño de la pantalla
+        var anchoPantalla =
+          window.innerWidth ||
+          document.documentElement.clientWidth ||
+          document.body.clientWidth;
+        var altoPantalla =
+          window.innerHeight ||
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+
+        // Mostrar el tamaño de la pantalla en la consola
+        console.log("Ancho de la pantalla: " + anchoPantalla + " px");
+        console.log("Alto de la pantalla: " + altoPantalla + " px");
+
+        let screenWidth =
+          window.innerWidth ||
+          document.documentElement.clientWidth ||
+          document.body.clientWidth;
+        console.log("screenWidth", screenWidth);
+
+        if (screenWidth < 900) {
+          map.setZoom(0);
+        } else if (screenWidth < 1400) {
+          map.setZoom(3);
+        } else {
+          map.setZoom(4);
+        }
+      }
+
+      // Agregar un eventListener para el evento de cambio de tamaño
+      window.addEventListener("resize", manejarCambioDeTamaño);
+    </script>
+  </body>
+</html>
